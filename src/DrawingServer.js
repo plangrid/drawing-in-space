@@ -7,7 +7,7 @@ export default class DrawingServer {
     this._points = [];
     this.ERROR_RATE = 0.0;
     this.MIN_LATENCY = 100;
-    this.MAX_LATENCY = 100;
+    this.MAX_LATENCY = 1000;
   }
 
   addPoints(points) {
