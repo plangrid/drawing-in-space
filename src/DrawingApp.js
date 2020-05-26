@@ -40,8 +40,8 @@ export default class DrawingApp extends React.Component {
   }
 
   onMouseUp(ev) {
-    this.dragging = false;
     this.onDraw(ev.nativeEvent.offsetX, ev.nativeEvent.offsetY, true);
+    this.dragging = false;
   }
 
   onMouseMove(ev) {
