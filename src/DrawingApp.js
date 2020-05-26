@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
-import DrawingServer from "./DrawingServer";
-import generatePathSegments from "./generate-paths";
+import DrawingServer from './DrawingServer';
+import generatePathSegments from './generate-paths';
 
-import "./App.css";
+import './App.css';
 
 export default class DrawingApp extends React.Component {
   constructor(props) {
@@ -12,10 +12,10 @@ export default class DrawingApp extends React.Component {
       dragging: false,
       points: [],
       confirmedPoints: [],
-      justStarted: false,
-      server: new DrawingServer(),
       refreshInterval: null,
     };
+
+    this.server = new DrawingServer();
 
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
@@ -36,69 +36,65 @@ export default class DrawingApp extends React.Component {
   }
 
   onMouseDown(ev) {
-    this.setState({ dragging: true, justStarted: true });
+    this.dragging = true;
   }
 
   onMouseUp(ev) {
-    this.setState({ dragging: false });
+    this.dragging = false;
+    this.onDraw(ev.nativeEvent.offsetX, ev.nativeEvent.offsetY, true);
   }
 
   onMouseMove(ev) {
-    if (this.state.dragging) {
+    this.onDraw(ev.nativeEvent.offsetX, ev.nativeEvent.offsetY);
+  }
+
+  onDraw(offsetX, offsetY, isEndOfSegment = false) {
+    const { server, dragging } = this;
+
+    if (dragging) {
       // We will build an array of exactly one or two points to add to our overall line data
-      const newPoints = [];
+      const points = [...this.state.points];
 
       // If this point is the start of a new segment, create an "end segment" point
       // with null coordinates.
       //
       // This simply acts as a separator between segments so we can keep all
       // points in one flat array.
-      if (this.state.justStarted && this.state.points.length > 0) {
-        newPoints.push({
-          x: null,
-          y: null,
-          isEndOfSegment: true,
-        });
-      }
 
       // Append a new point to the array
-      const newPoint = {
-        x: ev.nativeEvent.offsetX,
-        y: ev.nativeEvent.offsetY,
-        isEndOfSegment: false,
+      const point = {
+        x: offsetX,
+        y: offsetY,
+        isEndOfSegment,
       };
-
-      newPoints.push(newPoint);
-
-      this.setState({
-        points: this.state.points.concat(newPoints),
-        justStarted: false,
-      });
-
-      // And send to the "remote" server
-      this.state.server
-        .addPoints(newPoints)
-        .then(response => {
+      points.push(point);
+      server
+        .sendPoint(point)
+        .then((response) => {
           // Success
         })
-        .catch(error => {
+        .catch((error) => {
           // Failure
         });
+
+      this.setState({
+        points,
+      });
     }
   }
 
   reset() {
     this.setState({ points: [] });
-    this.state.server.reset();
+    this.server.reset();
   }
 
   refresh() {
-    this.state.server
+    this.server
       .getPoints()
-      .then(response => {
+      .then((response) => {
         this.setState({ confirmedPoints: response });
       })
-      .catch(error => {
+      .catch((error) => {
         console.warn(error);
       });
   }
@@ -113,8 +109,8 @@ export default class DrawingApp extends React.Component {
           onMouseUp={this.onMouseUp}
           onMouseMove={this.onMouseMove}
         >
-          {generatePathSegments(this.state.points, "sent")}
-          {generatePathSegments(this.state.confirmedPoints, "confirmed")}
+          {generatePathSegments(this.state.points, 'sent')}
+          {generatePathSegments(this.state.confirmedPoints, 'confirmed')}
         </svg>
         <div className="reset">
           <button onClick={this.reset}>Reset</button>
