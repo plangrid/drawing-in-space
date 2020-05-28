@@ -26,6 +26,14 @@ input {
   margin-right: 5px;
 }
 
+.DrawingLayer {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 path.sent {
   fill: none;
   stroke: rgba(0, 0, 0, 0.3);
@@ -38,10 +46,17 @@ path.confirmed {
   stroke-width: 2px;
 }
 
-.reset {
+.controls {
   position: absolute;
   left: 10px;
   bottom: 10px;
   z-index: 10;
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.controls > * {
+  margin-top: 10px;
 }
