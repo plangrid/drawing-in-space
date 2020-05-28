@@ -34,13 +34,7 @@ input {
   left: 0;
 }
 
-path.sent {
-  fill: none;
-  stroke: rgba(0, 0, 0, 0.3);
-  stroke-width: 2px;
-}
-
-path.confirmed {
+path {
   fill: none;
   stroke: rgba(0, 0, 255, 0.8);
   stroke-width: 2px;
@@ -52,11 +46,4 @@ path.confirmed {
   bottom: 10px;
   z-index: 10;
   user-select: none;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.controls > * {
-  margin-top: 10px;
 }
