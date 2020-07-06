@@ -25,10 +25,7 @@ export default class DrawingApp extends React.Component {
   }
 
   componentDidMount() {
-    (async () => {
-      await this.reset();
-      await this.refresh();
-    })();
+    this.reset();
   }
 
   onMouseDown(ev) {
