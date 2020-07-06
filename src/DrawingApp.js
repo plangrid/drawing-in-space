@@ -25,14 +25,10 @@ export default class DrawingApp extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({
-      refreshInterval: window.setInterval(this.refresh, 33),
-    });
-  }
-  componentWillUnmount() {
-    if (this.state.refreshInterval) {
-      window.clearInterval(this.state.refreshInterval);
-    }
+    (async () => {
+      await this.reset();
+      await this.refresh();
+    })();
   }
 
   onMouseDown(ev) {
