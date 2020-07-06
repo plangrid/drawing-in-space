@@ -2,14 +2,14 @@ const baseUrl = "http://localhost:1337";
 
 export default class DrawingServer {
   async addPoints(points) {
-    return await (await fetch(`${baseUrl}/points/add`, {
+    await fetch(`${baseUrl}/points/add`, {
       method: "POST",
       body: JSON.stringify(points),
       cache: "no-cache",
       headers: {
         "Content-Type": "application/json",
       },
-    })).json();
+    });
   }
 
   async getPoints() {

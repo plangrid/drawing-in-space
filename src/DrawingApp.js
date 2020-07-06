@@ -70,9 +70,9 @@ export default class DrawingApp extends React.Component {
       // And send to the "remote" server
       this.state.server
         .addPoints(newPoints)
-        .then((confirmedPoints) => {
+        .then(() => {
           // Success
-          this.setState({ confirmedPoints });
+          this.refresh();
         })
         .catch((error) => {
           // Failure

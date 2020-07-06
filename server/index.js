@@ -33,7 +33,7 @@ function withLatency(cb) {
 app.post("/points/add", (req, res, next) => {
   withLatency(() => {
     points.push.apply(points, req.body);
-    return points.slice(); // make sure the response is unchanged by later requests when the server responds
+    res.send();
   })
     .then(res.send.bind(res), (error) => {
       res.status(504);
