@@ -74,10 +74,11 @@ export default class DrawingApp extends React.Component {
       // And send to the "remote" server
       this.state.server
         .addPoints(newPoints)
-        .then(response => {
+        .then((confirmedPoints) => {
           // Success
+          this.setState({ confirmedPoints });
         })
-        .catch(error => {
+        .catch((error) => {
           // Failure
         });
     }
@@ -91,10 +92,10 @@ export default class DrawingApp extends React.Component {
   refresh() {
     this.state.server
       .getPoints()
-      .then(response => {
-        this.setState({ confirmedPoints: response });
+      .then((confirmedPoints) => {
+        this.setState({ confirmedPoints });
       })
-      .catch(error => {
+      .catch((error) => {
         console.warn(error);
       });
   }
