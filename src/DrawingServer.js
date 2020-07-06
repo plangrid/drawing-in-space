@@ -12,7 +12,7 @@ export default class DrawingServer {
     })).json();
   }
 
-  async getPoints(point) {
+  async getPoints() {
     return await (await fetch(`${baseUrl}/points`)).json();
   }
 
