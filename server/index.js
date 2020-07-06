@@ -36,7 +36,8 @@ app.post("/points/add", (req, res, next) => {
     return points.slice(); // make sure the response is unchanged by later requests when the server responds
   })
     .then(res.send.bind(res), (error) => {
-      throw new Error(error);
+      res.status(504);
+      res.send(error);
     })
     .catch(next);
 });
@@ -44,7 +45,8 @@ app.post("/points/add", (req, res, next) => {
 app.get("/points", (req, res, next) => {
   withLatency(() => points)
     .then(res.send.bind(res), (error) => {
-      throw new Error(error);
+      res.status(504);
+      res.send(error);
     })
     .catch(next);
 });
