@@ -14,7 +14,6 @@ export default class DrawingApp extends React.Component {
       confirmedPoints: [],
       justStarted: false,
       server: new DrawingServer(),
-      refreshInterval: null,
     };
 
     this.onMouseDown = this.onMouseDown.bind(this);
@@ -82,7 +81,7 @@ export default class DrawingApp extends React.Component {
   }
 
   reset() {
-    this.setState({ points: [] });
+    this.setState({ points: [], confirmedPoints: [], justStarted: true });
     this.state.server.reset();
   }
 
