@@ -1,31 +1,41 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
+app.use(express.json());
+app.use(cors());
+app.options("*", cors());
 
 let points = [];
 
 const PORT = 1337;
 const ERROR_RATE = 0.0;
 const MIN_LATENCY = 100;
-const MAX_LATENCY = 100;
+const MAX_LATENCY = 1000;
 
 function withLatency(cb) {
   const success = Math.random() < 1 - ERROR_RATE;
-  const latency = Math.random() * (MAX_LATENCY - MIN_LATENCY) + MIN_LATENCY;
-  return new Promise((resolve, reject) =>
+  return new Promise((resolve, reject) => {
+    // simulate random delay in delivery of the request
     setTimeout(() => {
-      if (success) {
-        resolve(cb());
-      } else {
-        reject("Network error.");
-      }
-    }, latency)
-  );
+      const response = cb();
+      // simulate random delay in delivery of the response
+      setTimeout(() => {
+        if (success) {
+          resolve(response);
+        } else {
+          reject("Network error.");
+        }
+      }, Math.random() * (MAX_LATENCY - MIN_LATENCY) + MIN_LATENCY);
+    }, Math.random() * (MAX_LATENCY - MIN_LATENCY) + MIN_LATENCY);
+  });
 }
 
-app.get("/points/add", (req, res, next) => {
-  const newPoints = JSON.parse(req.body);
-  withLatency(() => points.concat(newPoints))
-    .then(res.send.bind(res), error => {
+app.post("/points/add", (req, res, next) => {
+  withLatency(() => {
+    points.push.apply(points, req.body);
+    return points.slice(); // make sure the response is unchanged by later requests when the server responds
+  })
+    .then(res.send.bind(res), (error) => {
       throw new Error(error);
     })
     .catch(next);
@@ -33,7 +43,7 @@ app.get("/points/add", (req, res, next) => {
 
 app.get("/points", (req, res, next) => {
   withLatency(() => points)
-    .then(res.send.bind(res), error => {
+    .then(res.send.bind(res), (error) => {
       throw new Error(error);
     })
     .catch(next);
