@@ -10,7 +10,7 @@ let points = [];
 const PORT = 1337;
 const ERROR_RATE = 0.0;
 const MIN_LATENCY = 100;
-const MAX_LATENCY = 1000;
+const MAX_LATENCY = 100;
 
 function withLatency(cb) {
   const success = Math.random() < 1 - ERROR_RATE;
