@@ -1,49 +1,46 @@
 import React from "react";
 
-import DrawingServer from "./DrawingServer";
+import ServerInterface from "./ServerInterface";
 import generatePathSegments from "./generate-paths";
 
 import "./App.css";
 
+const refreshInterval = 1000;
+
 export default class DrawingApp extends React.Component {
   constructor(props) {
     super(props);
+    this.intervalId = null;
+
     this.state = {
       dragging: false,
       points: [],
       confirmedPoints: [],
       justStarted: false,
-      server: new DrawingServer(),
+      serverInterface: new ServerInterface(),
       refreshInterval: null,
     };
-
-    this.onMouseDown = this.onMouseDown.bind(this);
-    this.onMouseUp = this.onMouseUp.bind(this);
-    this.onMouseMove = this.onMouseMove.bind(this);
-    this.reset = this.reset.bind(this);
-    this.refresh = this.refresh.bind(this);
   }
 
   componentDidMount() {
-    this.setState({
-      refreshInterval: window.setInterval(this.refresh, 33),
-    });
+    this.intervalId = window.setInterval(this.refresh, refreshInterval);
   }
+
   componentWillUnmount() {
-    if (this.state.refreshInterval) {
-      window.clearInterval(this.state.refreshInterval);
+    if (this.intervalId) {
+      window.clearInterval(this.intervalId);
     }
   }
 
-  onMouseDown(ev) {
+  onMouseDown = (ev) => {
     this.setState({ dragging: true, justStarted: true });
-  }
+  };
 
-  onMouseUp(ev) {
+  onMouseUp = (ev) => {
     this.setState({ dragging: false });
-  }
+  };
 
-  onMouseMove(ev) {
+  onMouseMove = (ev) => {
     if (this.state.dragging) {
       // We will build an array of exactly one or two points to add to our overall line data
       const newPoints = [];
@@ -75,33 +72,33 @@ export default class DrawingApp extends React.Component {
         justStarted: false,
       });
 
-      // And send to the "remote" server
-      this.state.server
+      // And send to the space station
+      this.state.serverInterface
         .addPoints(newPoints)
-        .then(response => {
+        .then((response) => {
           // Success
         })
-        .catch(error => {
+        .catch((error) => {
           // Failure
         });
     }
-  }
+  };
 
-  reset() {
+  reset = () => {
     this.setState({ points: [] });
     this.state.server.reset();
-  }
+  };
 
-  refresh() {
-    this.state.server
+  refresh = () => {
+    this.state.serverInterface
       .getPoints()
-      .then(response => {
+      .then((response) => {
         this.setState({ confirmedPoints: response });
       })
-      .catch(error => {
+      .catch((error) => {
         console.warn(error);
       });
-  }
+  };
 
   render() {
     return (
