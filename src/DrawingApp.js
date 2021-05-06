@@ -1,4 +1,5 @@
 import React from "react";
+import { throttle } from "lodash";
 
 import DrawingServer from "./DrawingServer";
 import generatePathSegments from "./generate-paths";
@@ -16,15 +17,21 @@ export default class DrawingApp extends React.Component {
       server: new DrawingServer(),
     };
 
+    this.pointsToSend = [];
+
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.reset = this.reset.bind(this);
     this.refresh = this.refresh.bind(this);
+    this.sendPoints = throttle(this.sendPoints.bind(this), 200, {
+      leading: true,
+      trailing: true,
+    });
   }
 
   componentDidMount() {
-    this.reset();
+    this.refresh();
   }
 
   onMouseDown(ev) {
@@ -67,16 +74,9 @@ export default class DrawingApp extends React.Component {
         justStarted: false,
       });
 
-      // And send to the "remote" server
-      this.state.server
-        .addPoints(newPoints)
-        .then(() => {
-          // Success
-          this.refresh();
-        })
-        .catch((error) => {
-          // Failure
-        });
+      this.pointsToSend = this.pointsToSend.concat(newPoints);
+
+      this.sendPoints();
     }
   }
 
@@ -89,11 +89,28 @@ export default class DrawingApp extends React.Component {
     this.state.server
       .getPoints()
       .then((confirmedPoints) => {
-        this.setState({ confirmedPoints });
+        this.setState({ points: confirmedPoints, confirmedPoints });
       })
       .catch((error) => {
         console.warn(error);
       });
+  }
+
+  sendPoints() {
+    // And send to the "remote" server
+    this.state.server
+      .addPoints(this.pointsToSend)
+      .then((confirmedPoints) => {
+        // Success
+        this.setState({
+          confirmedPoints: this.state.confirmedPoints.concat(confirmedPoints),
+        });
+      })
+      .catch((error) => {
+        // Failure
+      });
+
+    this.pointsToSend = [];
   }
 
   render() {
