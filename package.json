@@ -10,17 +10,19 @@
   },
   "devDependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "cross-env": "^7.0.3",
+    "express": "^4.17.1",
+    "npm-run-all": "^4.1.5"
   },
   "scripts": {
     "start": "npm run start:full",
-    "start:a": "npm run start:server:a & npm run start:client",
-    "start:b": "npm run start:server:b & npm run start:client",
-    "start:full": "npm run start:server & npm run start:client",
+    "start:a": "npm-run-all --parallel start:server:a start:client",
+    "start:b": "npm-run-all --parallel start:server:b start:client",
+    "start:full": "npm-run-all --parallel start:server start:client",
     "start:client": "react-scripts start",
     "start:server": "node src/server.js",
-    "start:server:a": "NETWORK=a npm run start:server",
-    "start:server:b": "NETWORK=b npm run start:server",
+    "start:server:a": "cross-env NETWORK=a npm run start:server",
+    "start:server:b": "cross-env NETWORK=b npm run start:server",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
