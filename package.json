@@ -3,12 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "lodash": "^4.17.21",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
-    "react-scripts": "2.1.1"
+    "react-scripts": "^3.4.1"
+  },
+  "devDependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "npm run start:full",
+    "start:a": "npm run start:server:a & npm run start:client",
+    "start:b": "npm run start:server:b & npm run start:client",
+    "start:full": "npm run start:server & npm run start:client",
+    "start:client": "react-scripts start",
+    "start:server": "node src/server.js",
+    "start:server:a": "NETWORK=a npm run start:server",
+    "start:server:b": "NETWORK=b npm run start:server",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

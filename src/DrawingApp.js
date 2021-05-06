@@ -1,4 +1,5 @@
 import React from "react";
+import { throttle } from "lodash";
 
 import DrawingServer from "./DrawingServer";
 import generatePathSegments from "./generate-paths";
@@ -14,25 +15,23 @@ export default class DrawingApp extends React.Component {
       confirmedPoints: [],
       justStarted: false,
       server: new DrawingServer(),
-      refreshInterval: null,
     };
+
+    this.pointsToSend = [];
 
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.reset = this.reset.bind(this);
     this.refresh = this.refresh.bind(this);
+    this.sendPoints = throttle(this.sendPoints.bind(this), 200, {
+      leading: true,
+      trailing: true,
+    });
   }
 
   componentDidMount() {
-    this.setState({
-      refreshInterval: window.setInterval(this.refresh, 33),
-    });
-  }
-  componentWillUnmount() {
-    if (this.state.refreshInterval) {
-      window.clearInterval(this.state.refreshInterval);
-    }
+    this.refresh();
   }
 
   onMouseDown(ev) {
@@ -75,32 +74,43 @@ export default class DrawingApp extends React.Component {
         justStarted: false,
       });
 
-      // And send to the "remote" server
-      this.state.server
-        .addPoints(newPoints)
-        .then(response => {
-          // Success
-        })
-        .catch(error => {
-          // Failure
-        });
+      this.pointsToSend = this.pointsToSend.concat(newPoints);
+
+      this.sendPoints();
     }
   }
 
   reset() {
-    this.setState({ points: [] });
+    this.setState({ points: [], confirmedPoints: [], justStarted: true });
     this.state.server.reset();
   }
 
   refresh() {
     this.state.server
       .getPoints()
-      .then(response => {
-        this.setState({ confirmedPoints: response });
+      .then((confirmedPoints) => {
+        this.setState({ points: confirmedPoints, confirmedPoints });
       })
-      .catch(error => {
+      .catch((error) => {
         console.warn(error);
       });
+  }
+
+  sendPoints() {
+    // And send to the "remote" server
+    this.state.server
+      .addPoints(this.pointsToSend)
+      .then((confirmedPoints) => {
+        // Success
+        this.setState({
+          confirmedPoints: this.state.confirmedPoints.concat(confirmedPoints),
+        });
+      })
+      .catch((error) => {
+        // Failure
+      });
+
+    this.pointsToSend = [];
   }
 
   render() {
