@@ -24,7 +24,7 @@ export default class DrawingApp extends React.Component {
     this.onMouseMove = this.onMouseMove.bind(this);
     this.reset = this.reset.bind(this);
     this.refresh = this.refresh.bind(this);
-    this.sendPoints = throttle(this.sendPoints.bind(this), 200, {
+    this.sendPoints = throttle(this.sendPoints.bind(this), 50, {
       leading: true,
       trailing: true,
     });
