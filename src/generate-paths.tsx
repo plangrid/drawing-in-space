@@ -1,13 +1,14 @@
 import React from "react";
+import type { DrawingPoint } from "./types";
 
-// --------------------------------------------------------------------------
-// Path drawing code
-// --------------------------------------------------------------------------
+export default function generatePathSegments(
+  points: DrawingPoint[],
+  key = "segment"
+): React.ReactElement[] {
+  const segments: React.ReactElement[] = [];
+  let currentSegment: DrawingPoint[] = [];
 
-export default function generatePathSegments(points, key = "segment") {
-  const segments = [];
-  let currentSegment = [];
-  points.forEach(p => {
+  points.forEach((p) => {
     currentSegment.push(p);
     if (p.isEndOfSegment) {
       segments.push(
@@ -21,7 +22,6 @@ export default function generatePathSegments(points, key = "segment") {
     }
   });
 
-  // Flush out last segment
   if (currentSegment.length) {
     segments.push(
       <path
@@ -35,7 +35,7 @@ export default function generatePathSegments(points, key = "segment") {
   return segments;
 }
 
-function generatePath(points) {
+function generatePath(points: DrawingPoint[]): string {
   return points.reduce(
     (out, p, i) =>
       p.x !== null && p.y !== null
