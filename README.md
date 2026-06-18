@@ -2,4 +2,4 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Requirements
 
-This project requires **Node@16**.
+This project requires **Node@22**.
